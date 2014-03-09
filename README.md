@@ -1,5 +1,5 @@
-IVAN Vagrant Machine
-====================
+IVAN Vagrant VM
+===============
 
 Machine Details
 ---------------
@@ -32,11 +32,15 @@ Installation
         $ git submodule init
         $ git submodule update
 
-5. Run vagrant:
+5. Install vagrant vbguest plugin
+    
+        $ vagrant plugin install vagrant-vbguest
+
+6. Run vagrant:
     
         $ vagrant up
 
-6. Wait till its finished!
+7. Wait till its finished!
 
 Working with the machine
 ------------------------
