@@ -4,6 +4,26 @@ Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
 group { 'puppet':   ensure => present }
 group { 'www-data': ensure => present }
 
+user { ['apache', 'httpd', 'www-data']:
+    shell  => '/bin/bash',
+    ensure => present,
+    groups => 'www-data',
+    require => Group['www-data']
+}
+
+File { owner => 0, group => 0, mode => 0644 }
+
+file { "/var/lock/apache2":
+  ensure => directory,
+  owner => "www-data"
+}
+
+exec { "ApacheUserChange" :
+  command => "sed -i 's/export APACHE_RUN_USER=.*/export APACHE_RUN_USER=www-data/ ; s/export APACHE_RUN_GROUP=.*/export APACHE_RUN_GROUP=www-data/' /etc/apache2/envvars",
+  require => [ Package["apache"], File["/var/lock/apache2"] ],
+  notify  => Service['apache'],
+}
+
 exec { 'apt-get update':
     command => 'apt-get update',
 }
@@ -35,9 +55,33 @@ package { $sys_packages:
     require => Exec['apt-get update'],
 }
 
+$frontend_location = "/var/ivan/frontend"
+$webroot_location = "/var/ivan/frontend/web"
+
+include apache::params
+
 class { "apache": }
 
+#apache::dotconf { 'custom':
+#    content => 'EnableSendfile Off',
+#}
+
 apache::module { 'rewrite': }
+
+if ! defined(Directory[$frontend_location]) {
+    apache::vhost { "ivan.dev":
+        server_name   => "ivan.dev",
+        docroot       => $webroot_location,
+        port          => '80',
+        priority      => '1',
+        docroot_owner                => 'vagrant',
+        docroot_group                => 'vagrant',
+        directory     => $webroot_location,
+        directory_allow_override => 'all',
+        directory_options => "Indexes FollowSymLinks MultiViews
+            Require all granted"
+    }
+}
 
 apt::ppa { 'ppa:ondrej/php5':
     before  => Class['php'],
@@ -60,3 +104,5 @@ apt::ppa { 'ppa:chris-lea/node.js':
 class { 'nodejs':
     version => 'latest'
 }
+
+class { 'rabbitmq': }
