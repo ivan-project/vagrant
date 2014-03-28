@@ -68,19 +68,17 @@ class { "apache": }
 
 apache::module { 'rewrite': }
 
-if ! defined(Directory[$frontend_location]) {
-    apache::vhost { "ivan.dev":
-        server_name   => "ivan.dev",
-        docroot       => $webroot_location,
-        port          => '80',
-        priority      => '1',
-        docroot_owner                => 'vagrant',
-        docroot_group                => 'vagrant',
-        directory     => $webroot_location,
-        directory_allow_override => 'all',
-        directory_options => "Indexes FollowSymLinks MultiViews
-            Require all granted"
-    }
+apache::vhost { "ivan.dev":
+    server_name   => "ivan.dev",
+    docroot       => $webroot_location,
+    port          => '80',
+    priority      => '1',
+    docroot_owner                => 'vagrant',
+    docroot_group                => 'vagrant',
+    directory     => $webroot_location,
+    directory_allow_override => 'all',
+    directory_options => "Indexes FollowSymLinks MultiViews
+        Require all granted"
 }
 
 apt::ppa { 'ppa:ondrej/php5':
