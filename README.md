@@ -14,8 +14,9 @@ Installed Packages
 * Vim
 * Apache 2.4 (mod_rewrite)
 * PHP 5.5 (imagick, xdebug, curl, intl, mcrypt)
-* Node.JS 0.11
-* RabbitMQ
+* Node.JS 0.10
+* RabbitMQ (host: localhost)
+* MongoDB (db: ivan, login/pass: ivan/ivan)
 
 Installation
 ------------

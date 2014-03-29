@@ -100,7 +100,14 @@ apt::ppa { 'ppa:chris-lea/node.js':
 }
 
 class { 'nodejs':
-    version => 'latest'
+    version => 'v0.10.26'
 }
 
 class { 'rabbitmq': }
+
+class { 'mongodb': }
+
+mongodb::db { 'ivan': 
+    user => 'ivan',
+    password => 'ivan',
+}
