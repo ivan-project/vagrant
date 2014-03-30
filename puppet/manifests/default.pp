@@ -5,23 +5,41 @@ group { 'puppet':   ensure => present }
 group { 'www-data': ensure => present }
 
 user { ['apache', 'httpd', 'www-data']:
-    shell  => '/bin/bash',
-    ensure => present,
-    groups => 'www-data',
+    shell   => '/bin/bash',
+    ensure  => present,
+    groups  => 'www-data',
     require => Group['www-data']
+}
+
+file { ".vimrc":
+    path    => "/home/vagrant/.vimrc",
+    owner   => "vagrant",
+    group   => "vagrant",
+    mode    => '0644',
+    require => User["vagrant"],
+    content => template('dotfiles/vimrc.erb'),
+}
+
+file { ".bash_aliases":
+    path    => "/home/vagrant/.bash_aliases",
+    owner   => "vagrant",
+    group   => "vagrant",
+    mode    => '0644',
+    require => User["vagrant"],
+    content => template('dotfiles/bash_aliases.erb'),
 }
 
 File { owner => 0, group => 0, mode => 0644 }
 
 file { "/var/lock/apache2":
-  ensure => directory,
-  owner => "www-data"
+    ensure    => directory,
+    owner     => "www-data"
 }
 
 exec { "ApacheUserChange" :
-  command => "sed -i 's/export APACHE_RUN_USER=.*/export APACHE_RUN_USER=www-data/ ; s/export APACHE_RUN_GROUP=.*/export APACHE_RUN_GROUP=www-data/' /etc/apache2/envvars",
-  require => [ Package["apache"], File["/var/lock/apache2"] ],
-  notify  => Service['apache'],
+    command => "sed -i 's/export APACHE_RUN_USER=.*/export APACHE_RUN_USER=www-data/ ; s/export APACHE_RUN_GROUP=.*/export APACHE_RUN_GROUP=www-data/' /etc/apache2/envvars",
+    require => [ Package["apache"], File["/var/lock/apache2"] ],
+    notify  => Service['apache'],
 }
 
 exec { 'apt-get update':
@@ -73,11 +91,11 @@ apache::vhost { "ivan.dev":
     docroot       => $webroot_location,
     port          => '80',
     priority      => '1',
-    docroot_owner                => 'vagrant',
-    docroot_group                => 'vagrant',
+    docroot_owner => 'vagrant',
+    docroot_group => 'vagrant',
     directory     => $webroot_location,
-    directory_allow_override => 'all',
-    directory_options => "Indexes FollowSymLinks MultiViews
+    directory_allow_override    => 'all',
+    directory_options           => "Indexes FollowSymLinks MultiViews
         Require all granted"
 }
 
@@ -107,7 +125,19 @@ class { 'rabbitmq': }
 
 class { 'mongodb': }
 
-mongodb::db { 'ivan': 
-    user => 'ivan',
-    password => 'ivan',
+mongodb::db { 'ivan':
+    user        => 'ivan',
+    password    => 'ivan',
+}
+
+class { 'composer':
+    auto_update => true
+}
+
+Class['::nodejs'] -> Exec["queue_npm_install"]
+
+exec { "queue_npm_install":
+    command     => "npm install",
+    cwd         => "/var/ivan/queue",
+    onlyif      => "test -f /var/ivan/queue/package.json",
 }
