@@ -4,7 +4,7 @@ Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
 group { 'puppet':   ensure => present }
 group { 'www-data': ensure => present }
 
-user { ['apache', 'httpd', 'www-data']:
+user { ['apache', 'httpd', 'www-data', 'vagrant']:
     shell   => '/bin/bash',
     ensure  => present,
     groups  => 'www-data',
@@ -17,7 +17,7 @@ file { ".vimrc":
     group   => "vagrant",
     mode    => '0644',
     require => User["vagrant"],
-    content => template('dotfiles/vimrc.erb'),
+    content => template('/var/ivan/vagrant/dotfiles/vimrc.erb'),
 }
 
 file { ".bash_aliases":
@@ -26,7 +26,7 @@ file { ".bash_aliases":
     group   => "vagrant",
     mode    => '0644',
     require => User["vagrant"],
-    content => template('dotfiles/bash_aliases.erb'),
+    content => template('/var/ivan/vagrant/dotfiles/bash_aliases.erb'),
 }
 
 File { owner => 0, group => 0, mode => 0644 }
@@ -108,7 +108,7 @@ $php_modules = [ 'imagick', 'xdebug', 'curl', 'cli', 'intl', 'mcrypt']
 php::module { $php_modules: }
 
 php::ini { 'php':
-    value   => ['date.timezone = "UTC"','upload_max_filesize = 100M', 'short_open_tag = 0'],
+    value   => ['date.timezone = "UTC"', 'upload_max_filesize = 100M', 'short_open_tag = 0'],
     target  => 'php.ini',
     service => 'apache',
 }
@@ -117,27 +117,30 @@ apt::ppa { 'ppa:chris-lea/node.js':
     before  => Class['nodejs'],
 }
 
+$node_version = 'v0.10.26'
+
 class { 'nodejs':
-    version => 'v0.10.26'
+    version     => $node_version,
+    target_dir  => '/usr/bin',
 }
 
 class { 'rabbitmq': }
 
 class { 'mongodb': }
 
-mongodb::db { 'ivan':
-    user        => 'ivan',
-    password    => 'ivan',
-}
+#mongodb::db { 'ivan':
+#    user        => 'ivan',
+#    password    => 'ivan',
+#}
 
 class { 'composer':
     auto_update => true
 }
 
-Class['::nodejs'] -> Exec["queue_npm_install"]
+Class['nodejs'] -> Exec["queue_npm_install"]
 
 exec { "queue_npm_install":
-    command     => "npm install",
+    command     => "/usr/local/node/node-default/bin/npm install",
     cwd         => "/var/ivan/queue",
     onlyif      => "test -f /var/ivan/queue/package.json",
 }
