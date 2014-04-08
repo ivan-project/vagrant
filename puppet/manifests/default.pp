@@ -144,3 +144,5 @@ exec { "queue_npm_install":
     cwd         => "/var/ivan/queue",
     onlyif      => "test -f /var/ivan/queue/package.json",
 }
+
+class { 'java': }

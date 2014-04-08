@@ -17,11 +17,12 @@ Installed Packages
 * Node.JS 0.10
 * RabbitMQ (host: localhost)
 * MongoDB (db: ivan, login/pass: ivan/ivan)
+* Java 1.7
 
 Installation
 ------------
 
-1. Download and install latest VitualBox: <https://www.virtualbox.org/wiki/Downloads>
+1. Download and install latest VirtualBox: <https://www.virtualbox.org/wiki/Downloads>
 2. Download and install latest Vagrant: <http://www.vagrantup.com/downloads.html>
 3. Clone this repository into `(...)ivan-project/vagrant`:
 
