@@ -66,7 +66,7 @@ package { ['python-software-properties']:
     require => Exec['apt-get update'],
 }
 
-$sys_packages = [ 'build-essential', 'curl', 'vim']
+$sys_packages = [ 'build-essential', 'curl', 'vim', 'fontconfig', 'pkg-config', 'libfontconfig1-dev', 'libjpeg-dev', 'libopenjpeg-dev']
 
 package { $sys_packages:
     ensure => "installed",
@@ -146,3 +146,24 @@ exec { "queue_npm_install":
 }
 
 class { 'java': }
+
+Package['fontconfig'] -> Puppi::Netinstall["poppler"]
+Package['pkg-config'] -> Puppi::Netinstall["poppler"]
+Package['libfontconfig1-dev'] -> Puppi::Netinstall["poppler"]
+Package['libjpeg-dev'] -> Puppi::Netinstall["poppler"]
+Package['libopenjpeg-dev'] -> Puppi::Netinstall["poppler"]
+
+puppi::netinstall { 'poppler':
+    url => 'http://poppler.freedesktop.org/poppler-0.24.5.tar.xz',
+    extract_command => "tar -xJf",
+    extracted_dir => 'poppler-0.24.5',
+    destination_dir => '/tmp',
+    postextract_command => '/tmp/poppler-0.24.5/configure --prefix=/usr --sysconfdir=/etc --disable-static --enable-xpdf-headers && make && sudo make install',
+}
+
+puppi::netinstall { 'poppler-data':
+    url => 'http://poppler.freedesktop.org/poppler-data-0.4.6.tar.gz',
+    extracted_dir => 'poppler-data-0.4.6',
+    destination_dir => '/tmp',
+    postextract_command => 'sudo make prefix=/usr install',
+}

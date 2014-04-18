@@ -18,6 +18,7 @@ Installed Packages
 * RabbitMQ (host: localhost)
 * MongoDB (db: ivan, login/pass: ivan/ivan)
 * Java 1.7
+* Poppler 0.24.5
 
 Installation
 ------------
