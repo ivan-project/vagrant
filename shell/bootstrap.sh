@@ -5,7 +5,7 @@ sudo apt-get update >/dev/null
 
 mkdir -p /.ivan-stuff
 
-if [[ ! -f /.ivan-stuff/puppet-v4 ]]; then
+if [[ ! -f /.ivan-stuff/puppet-v5 ]]; then
     wget --quiet --tries=5 --connect-timeout=10 -O "/.ivan-stuff/puppetlabs-release-precise.deb" "http://apt.puppetlabs.com/puppetlabs-release-precise.deb"
 
     dpkg -i "/.ivan-stuff/puppetlabs-release-precise.deb" >/dev/null
@@ -28,5 +28,5 @@ if [[ ! -f /.ivan-stuff/puppet-v4 ]]; then
     puppet module install willdurand/composer --version 0.0.6 --force
     puppet module install puppetlabs-java --version 1.1.0 --force
 
-    touch /.ivan-stuff/puppet-v4
+    touch /.ivan-stuff/puppet-v5
 fi

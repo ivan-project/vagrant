@@ -19,6 +19,7 @@ Installed Packages
 * MongoDB (db: ivan, login/pass: ivan/ivan)
 * Java 1.7
 * Poppler 0.24.5
+* Ruby 1.9.3
 
 Installation
 ------------

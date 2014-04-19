@@ -147,11 +147,7 @@ exec { "queue_npm_install":
 
 class { 'java': }
 
-Package['fontconfig'] -> Puppi::Netinstall["poppler"]
-Package['pkg-config'] -> Puppi::Netinstall["poppler"]
-Package['libfontconfig1-dev'] -> Puppi::Netinstall["poppler"]
-Package['libjpeg-dev'] -> Puppi::Netinstall["poppler"]
-Package['libopenjpeg-dev'] -> Puppi::Netinstall["poppler"]
+Package <| |> -> Puppi::Netinstall["poppler"] -> Puppi::Netinstall["poppler-data"]
 
 puppi::netinstall { 'poppler':
     url => 'http://poppler.freedesktop.org/poppler-0.24.5.tar.xz',
@@ -166,4 +162,13 @@ puppi::netinstall { 'poppler-data':
     extracted_dir => 'poppler-data-0.4.6',
     destination_dir => '/tmp',
     postextract_command => 'sudo make prefix=/usr install',
+}
+
+apt::ppa { 'ppa:brightbox/ruby-ng':
+} ->
+package { ['ruby', 'rubygems', 'ruby-switch', 'ruby1.9.3']:
+    ensure => "installed",
+} ->
+exec { 'ruby-switch':
+    command => 'ruby-switch --set ruby1.9.1'
 }
