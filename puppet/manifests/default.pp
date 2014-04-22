@@ -128,10 +128,10 @@ class { 'rabbitmq': }
 
 class { 'mongodb': }
 
-#mongodb::db { 'ivan':
-#    user        => 'ivan',
-#    password    => 'ivan',
-#}
+mongodb::db { 'ivan':
+    user        => 'ivan',
+    password    => 'ivan',
+}
 
 class { 'composer':
     auto_update => true
