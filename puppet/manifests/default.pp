@@ -181,5 +181,5 @@ puppi::netinstall { 'docx2txt':
     url => 'http://downloads.sourceforge.net/project/docx2txt/docx2txt/v1.3/docx2txt-1.3.tgz',
     extracted_dir => 'docx2txt-1.3',
     destination_dir => '/tmp',
-    postextract_command => 'sudo make install',
+    postextract_command => 'sudo make',
 }
