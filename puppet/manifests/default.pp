@@ -66,7 +66,7 @@ package { ['python-software-properties']:
     require => Exec['apt-get update'],
 }
 
-$sys_packages = [ 'build-essential', 'curl', 'vim', 'fontconfig', 'pkg-config', 'libfontconfig1-dev', 'libjpeg-dev', 'libopenjpeg-dev']
+$sys_packages = [ 'build-essential', 'curl', 'vim', 'fontconfig', 'pkg-config', 'libfontconfig1-dev', 'libjpeg-dev', 'libopenjpeg-dev', 'unzip']
 
 package { $sys_packages:
     ensure => "installed",
@@ -126,8 +126,10 @@ class { 'nodejs':
 
 class { 'rabbitmq': }
 
-class { 'mongodb': }
-
+class {'::mongodb::globals':
+  manage_package_repo => true,
+}->
+class {'::mongodb::server': }->
 mongodb::db { 'ivan':
     user        => 'ivan',
     password    => 'ivan',
@@ -171,4 +173,13 @@ package { ['ruby', 'rubygems', 'ruby-switch', 'ruby1.9.3']:
 } ->
 exec { 'ruby-switch':
     command => 'ruby-switch --set ruby1.9.1'
+}
+
+Package <| |> -> Puppi::Netinstall["docx2txt"]
+
+puppi::netinstall { 'docx2txt':
+    url => 'http://downloads.sourceforge.net/project/docx2txt/docx2txt/v1.3/docx2txt-1.3.tgz',
+    extracted_dir => 'docx2txt-1.3',
+    destination_dir => '/tmp',
+    postextract_command => 'sudo make install',
 }
