@@ -74,7 +74,7 @@ package { $sys_packages:
 }
 
 $frontend_location = "/var/ivan/frontend"
-$webroot_location = "/var/ivan/frontend/web"
+$webroot_location = "/var/ivan/frontend/web/public"
 
 include apache::params
 
