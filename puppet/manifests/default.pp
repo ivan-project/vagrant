@@ -113,6 +113,18 @@ php::ini { 'php':
     service => 'apache',
 }
 
+php::pecl::module { 'mongo':
+    use_package => "no",
+}
+
+php::ini { 'php_ini_configuration':
+  value   => [
+    'extension=mongo.so'
+  ],
+  notify  => Service['apache'],
+  require => Class['php']
+}
+
 apt::ppa { 'ppa:chris-lea/node.js':
     before  => Class['nodejs'],
 }
