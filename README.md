@@ -4,7 +4,7 @@ IVAN Vagrant VM
 Machine Details
 ---------------
 
-* **Base Box**: Ubuntu 12.04 LTS
+* **Base Box**: Ubuntu 12.04 LTS 64-bit
 * **Project Dir**: `/var/ivan`
 
 Installed Packages

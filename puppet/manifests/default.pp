@@ -42,6 +42,12 @@ exec { "ApacheUserChange" :
     notify  => Service['apache'],
 }
 
+class { 'staging':
+    path  => '/var/staging',
+    owner => 'puppet',
+    group => 'puppet',
+}
+
 exec { 'apt-get update':
     command => 'apt-get update',
 }
