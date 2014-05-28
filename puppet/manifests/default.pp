@@ -147,9 +147,18 @@ mongodb::db { 'ivan':
     password    => 'ivan',
 }
 
+Class['php'] -> Class['composer']
+
 class { 'composer':
     auto_update => true
 }
+#->
+#exec { "composer_frontend_install":
+#    command     => "/usr/local/bin/composer install",
+#    cwd         => "/var/ivan/frontend/web",
+#    onlyif      => "test -f /var/ivan/frontend/web/composer.json",
+#    user        => "vagrant"
+#}
 
 Class['nodejs'] -> Exec["queue_npm_install"]
 
