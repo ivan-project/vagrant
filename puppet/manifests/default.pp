@@ -1,5 +1,5 @@
 
-Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
+Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin' ] }
 
 group { 'puppet':   ensure => present }
 group { 'www-data': ensure => present }
@@ -72,11 +72,15 @@ package { ['python-software-properties']:
     require => Exec['apt-get update'],
 }
 
-$sys_packages = [ 'build-essential', 'curl', 'vim', 'fontconfig', 'pkg-config', 'libfontconfig1-dev', 'libjpeg-dev', 'libopenjpeg-dev', 'unzip']
+$sys_packages = [ 'build-essential', 'curl', 'vim', 'fontconfig', 'pkg-config', 'libfontconfig1-dev', 'libjpeg-dev', 'libopenjpeg-dev', 'unzip', 'make' ]
 
 package { $sys_packages:
     ensure => "installed",
     require => Exec['apt-get update'],
+}
+
+class { 'sendmail':
+  puppi    => true,
 }
 
 $frontend_location = "/var/ivan/frontend"
@@ -114,7 +118,7 @@ $php_modules = [ 'imagick', 'xdebug', 'curl', 'cli', 'intl', 'mcrypt']
 php::module { $php_modules: }
 
 php::ini { 'php':
-    value   => ['date.timezone = "UTC"', 'upload_max_filesize = 100M', 'short_open_tag = 0'],
+    value   => ['date.timezone = "UTC"', 'upload_max_filesize = 100M', 'short_open_tag = 0', 'sendmail_path = "/usr/sbin/sendmail -t -i"'],
     target  => 'php.ini',
     service => 'apache',
 }
@@ -139,15 +143,18 @@ $node_version = 'v0.10.26'
 
 class { 'nodejs':
     version     => $node_version,
+    make_install => false,
     target_dir  => '/usr/bin',
 }
 
 class { 'rabbitmq': }
 
 class {'::mongodb::globals':
-  manage_package_repo => true,
+    manage_package_repo => true,
 }->
-class {'::mongodb::server': }->
+class { '::mongodb::server':
+    bind_ip     => '0.0.0.0',
+}->
 mongodb::db { 'ivan':
     user        => 'ivan',
     password    => 'ivan',
@@ -158,13 +165,15 @@ Class['php'] -> Class['composer']
 class { 'composer':
     auto_update => true
 }
-#->
-#exec { "composer_frontend_install":
-#    command     => "/usr/local/bin/composer install",
-#    cwd         => "/var/ivan/frontend/web",
-#    onlyif      => "test -f /var/ivan/frontend/web/composer.json",
-#    user        => "vagrant"
-#}
+->
+exec { "composer_frontend_install":
+    command     => "composer install --prefer-dist",
+    cwd         => "/var/ivan/frontend/web",
+    onlyif      => "test -f /var/ivan/frontend/web/composer.json",
+    group       => "vagrant",
+    user        => "vagrant",
+    environment => ["COMPOSER_HOME=/home/vagrant"],
+}
 
 Class['nodejs'] -> Exec["queue_npm_install"]
 
@@ -209,4 +218,14 @@ puppi::netinstall { 'docx2txt':
     extracted_dir => 'docx2txt-1.3',
     destination_dir => '/tmp',
     postextract_command => 'sudo make',
+}
+
+class { 'supervisord':
+  install_pip  => true,
+  install_init => true,
+  nocleanup    => true,
+}
+
+class { 'postfix':
+    puppi    => true,
 }
