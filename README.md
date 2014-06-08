@@ -1,57 +1,77 @@
 IVAN Vagrant VM
 ===============
 
-Machine Details
----------------
+Informacje o maszynie
+---------------------
 
-* **Base Box**: Ubuntu 12.04 LTS 64-bit
-* **Project Dir**: `/var/ivan`
+* **System operacyjny**: Ubuntu 12.04 LTS 64-bit
+* **Lokalizacja projektu**: `/var/ivan`
+* **Adres IP**: 172.70.70.70
 
-Installed Packages
-------------------
+Zainstalowane pakiety
+---------------------
 
 * Git
 * Vim
 * Apache 2.4 (mod_rewrite)
 * PHP 5.5 (imagick, xdebug, curl, intl, mcrypt)
 * Node.JS 0.10
-* RabbitMQ (host: localhost)
-* MongoDB (db: ivan, login/pass: ivan/ivan)
+* RabbitMQ (host: `localhost`)
+* MongoDB (db: `ivan`, login/pass: `ivan`/`ivan`)
 * Java 1.7
 * Poppler 0.24.5
 * Ruby 1.9.3
 
-Installation
-------------
+Instalacja
+----------
 
-1. Download and install latest VirtualBox: <https://www.virtualbox.org/wiki/Downloads>
-2. Download and install latest Vagrant: <http://www.vagrantup.com/downloads.html>
-3. Clone this repository into `(...)ivan-project/vagrant`:
+1. Ściągnąć i zainstalować najnowszy VirtualBox: <https://www.virtualbox.org/wiki/Downloads>
+2. Ściągnąć i zainstalować najnowszy Vagrant: <http://www.vagrantup.com/downloads.html>
 
-        $ cd ivan-project
-        $ git clone git@github.com:ivan-project/vagrant.git
-        $ cd vagrant
+3. Zainstalować plugin vagranta
 
-4. Install vagrant vbguest plugin
+    ```bash
+    $ vagrant plugin install vagrant-vbguest
+    ```
 
-        $ vagrant plugin install vagrant-vbguest
+4. Odpalić maszynę:
 
-5. Run vagrant:
+    ```bash
+    $ vagrant up
+    ```
 
-        $ vagrant up
+6. Czekać na zakończenie działania (pierwsze uruchomienie trwa dość długo)
 
-6. Wait till its finished! (Go grab a coffee, first run may take a pretty long time.)
+Vhost do uruchomienia frontendu
+-------------------------------
 
-Working with the machine
-------------------------
+Konieczne jest dopisanie do pliku `hosts` (*nix: `/etc/hosts`, Windows: `C:\Windows\system32\drivers\etc\hosts`) następującej linijki:
 
-* Connecting to the machine
+```
+172.70.70.70    ivan.dev
+```
 
-        $ vagrant up
-        $ vagrant ssh
+Dostęp do frontendu dostępny jest pod adresem: <http://ivan.dev/>
 
-* Stopping the machine
+Praca z maszyną
+---------------
 
-        $ vagrant halt
+* Startowanie maszyny
 
-Remember to halt the machine in order to free your system resources (without `vagrant halt` the VM will be still running in the background taking up to 1 GB of your RAM).
+    ```bash
+    $ vagrant up --provision
+    ```
+
+* Połączenie SSH
+
+    ```bash
+    $ vagrant ssh
+    ```
+
+* Zatrzymywanie maszyny
+
+    ```bash
+    $ vagrant halt
+    ```
+
+Należy pamiętać by zatrzymać maszynę po to by zwolnić zasoby systemowe (bez wywołania `vagrant halt` maszyna wirtualna pochłania ponad 1 GB pamięci RAM hosta).
