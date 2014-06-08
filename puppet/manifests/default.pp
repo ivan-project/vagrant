@@ -229,3 +229,13 @@ class { 'supervisord':
 class { 'postfix':
     puppi    => true,
 }
+
+Package <| |> ->
+exec { "lemmatizer_make":
+    command     => "make",
+    cwd         => "/var/ivan/lemmatizer",
+    onlyif      => "test -f /var/ivan/lemmatizer/Makefile",
+    unless      => "test -f /var/ivan/lemmatizer/Lemmatizer.class",
+    group       => "vagrant",
+    user        => "vagrant",
+}
