@@ -170,6 +170,7 @@ exec { "composer_frontend_install":
     command     => "composer install --prefer-dist",
     cwd         => "/var/ivan/frontend/web",
     onlyif      => "test -f /var/ivan/frontend/web/composer.json",
+    unless      => "test -d /var/ivan/frontend/web/vendor",
     group       => "vagrant",
     user        => "vagrant",
     environment => ["COMPOSER_HOME=/home/vagrant"],
@@ -181,6 +182,7 @@ exec { "queue_npm_install":
     command     => "/usr/local/node/node-default/bin/npm install",
     cwd         => "/var/ivan/queue",
     onlyif      => "test -f /var/ivan/queue/package.json",
+    unless      => "test -d /var/ivan/queue/node_modules",
 }
 
 class { 'java': }
@@ -209,7 +211,19 @@ package { ['ruby', 'rubygems', 'ruby-switch', 'ruby1.9.3']:
 } ->
 exec { 'ruby-switch':
     command => 'ruby-switch --set ruby1.9.1'
+} ->
+exec { 'ruby-gem-diffy':
+    command => 'sudo gem1.9.3 install diffy'
+}->
+exec { 'ruby-gem-similartext':
+    command => 'sudo gem1.9.3 install similar_text'
 }
+#}->
+#exec { "bundle_install":
+#    command     => "bundle install",
+#    cwd         => "/var/ivan/diff",
+#    onlyif      => "test -f /var/ivan/diff/Gemfile",
+#}
 
 Package <| |> -> Puppi::Netinstall["docx2txt"]
 
@@ -238,4 +252,13 @@ exec { "lemmatizer_make":
     unless      => "test -f /var/ivan/lemmatizer/Lemmatizer.class",
     group       => "vagrant",
     user        => "vagrant",
+} ->
+exec { "dictionary_importer_make":
+    command     => "make",
+    cwd         => "/var/ivan/dictionary_importer",
+    onlyif      => "test -f /var/ivan/dictionary_importer/Makefile",
+    unless      => "test -f /var/ivan/dictionary_importer/DictExport.class",
+    group       => "vagrant",
+    user        => "vagrant",
 }
+
