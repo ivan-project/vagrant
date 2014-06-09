@@ -235,10 +235,19 @@ puppi::netinstall { 'docx2txt':
 }
 
 class { 'supervisord':
-  install_pip  => true,
-  install_init => true,
-  nocleanup    => true,
+    install_pip  => true,
+    install_init => true,
+    nocleanup    => true,
 }
+
+# todo
+#supervisord::program { 'ivan_queue':
+#    command     => 'node /var/ivan/queue/app.js',
+#    priority    => '100',
+#    autostart   => true,
+#    autorestart => true,
+#    user        => 'vagrant',
+#}
 
 class { 'postfix':
     puppi    => true,
