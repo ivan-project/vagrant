@@ -177,6 +177,10 @@ exec { "composer_frontend_install":
 }
 
 Class['nodejs'] -> Exec["queue_npm_install"]
+# ->
+#supervisord::supervisorctl { 'restart_queue':
+#    command => 'restart'
+#}
 
 exec { "queue_npm_install":
     command     => "/usr/local/node/node-default/bin/npm install",
@@ -240,14 +244,17 @@ class { 'supervisord':
     nocleanup    => true,
 }
 
-# todo
-#supervisord::program { 'ivan_queue':
-#    command     => 'node /var/ivan/queue/app.js',
-#    priority    => '100',
-#    autostart   => true,
-#    autorestart => true,
-#    user        => 'vagrant',
-#}
+supervisord::program { 'ivan_queue':
+    command     => '/usr/local/node/node-default/bin/node /var/ivan/queue/app.js',
+    priority    => '100',
+    autostart   => true,
+    autorestart => 'true',
+    user        => 'vagrant',
+    environment => {
+        'HOME'   => '/home/vagrant',
+        'PATH'   => '/usr/local/node/node-default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    }
+}
 
 class { 'postfix':
     puppi    => true,
