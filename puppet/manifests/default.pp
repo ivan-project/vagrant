@@ -238,6 +238,8 @@ puppi::netinstall { 'docx2txt':
     postextract_command => 'sudo make',
 }
 
+Package["curl"] -> Exec["install_setuptools"]
+
 class { 'supervisord':
     install_pip  => true,
     install_init => true,
