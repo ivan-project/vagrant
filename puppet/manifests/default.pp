@@ -188,7 +188,6 @@ exec { "npm_install_nodegyp":
     command     => "/usr/local/node/node-default/bin/npm install -g node-gyp",
     cwd         => "/var/ivan/queue",
     onlyif      => "test -f /var/ivan/queue/package.json",
-    unless      => "test -d /var/ivan/queue/node_modules",
 }
 
 exec { "queue_npm_install":
