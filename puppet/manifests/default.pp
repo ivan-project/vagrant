@@ -149,6 +149,8 @@ class { 'nodejs':
 
 class { 'rabbitmq': }
 
+Package["build-essential"] -> Class["mongodb::globals"]
+
 class {'::mongodb::globals':
     manage_package_repo => true,
 }->
@@ -176,11 +178,18 @@ exec { "composer_frontend_install":
     environment => ["COMPOSER_HOME=/home/vagrant"],
 }
 
-Class['nodejs'] -> Exec["queue_npm_install"]
+Class['nodejs'] -> Exec["npm_install_nodegyp"] -> Exec["queue_npm_install"]
 # ->
 #supervisord::supervisorctl { 'restart_queue':
 #    command => 'restart'
 #}
+
+exec { "npm_install_nodegyp":
+    command     => "/usr/local/node/node-default/bin/npm install -g node-gyp",
+    cwd         => "/var/ivan/queue",
+    onlyif      => "test -f /var/ivan/queue/package.json",
+    unless      => "test -d /var/ivan/queue/node_modules",
+}
 
 exec { "queue_npm_install":
     command     => "/usr/local/node/node-default/bin/npm install",
@@ -239,12 +248,15 @@ puppi::netinstall { 'docx2txt':
 }
 
 Package["curl"] -> Exec["install_setuptools"]
+Class['supervisord::service'] -> Class['supervisord::reload']
 
 class { 'supervisord':
     install_pip  => true,
     install_init => true,
     nocleanup    => true,
 }
+
+Exec['queue_npm_install'] -> Supervisord::Program["ivan_queue"]
 
 supervisord::program { 'ivan_queue':
     command     => '/usr/local/node/node-default/bin/node /var/ivan/queue/app.js',
