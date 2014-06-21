@@ -178,7 +178,7 @@ exec { "composer_frontend_install":
     environment => ["COMPOSER_HOME=/home/vagrant"],
 }
 
-Class['nodejs'] -> Exec["npm_install_nodegyp"] -> Exec["queue_npm_install"]
+Class['nodejs'] -> Exec["npm_install_nodegyp"] -> Exec["queue_npm_update"]
 # ->
 #supervisord::supervisorctl { 'restart_queue':
 #    command => 'restart'
@@ -190,8 +190,8 @@ exec { "npm_install_nodegyp":
     onlyif      => "test -f /var/ivan/queue/package.json",
 }
 
-exec { "queue_npm_install":
-    command     => "/usr/local/node/node-default/bin/npm install",
+exec { "queue_npm_update":
+    command     => "/usr/local/node/node-default/bin/npm update",
     cwd         => "/var/ivan/queue",
     onlyif      => "test -f /var/ivan/queue/package.json",
     #unless      => "test -d /var/ivan/queue/node_modules",
@@ -255,7 +255,7 @@ class { 'supervisord':
     nocleanup    => true,
 }
 
-Exec['queue_npm_install'] -> Supervisord::Program["ivan_queue"]
+Exec['queue_npm_update'] -> Supervisord::Program["ivan_queue"]
 
 supervisord::program { 'ivan_queue':
     command     => '/usr/local/node/node-default/bin/node /var/ivan/queue/app.js',
