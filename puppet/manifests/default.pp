@@ -172,7 +172,7 @@ exec { "composer_frontend_install":
     command     => "composer install --prefer-dist",
     cwd         => "/var/ivan/frontend/web",
     onlyif      => "test -f /var/ivan/frontend/web/composer.json",
-    unless      => "test -d /var/ivan/frontend/web/vendor",
+    #unless      => "test -d /var/ivan/frontend/web/vendor",
     group       => "vagrant",
     user        => "vagrant",
     environment => ["COMPOSER_HOME=/home/vagrant"],
@@ -194,7 +194,7 @@ exec { "queue_npm_install":
     command     => "/usr/local/node/node-default/bin/npm install",
     cwd         => "/var/ivan/queue",
     onlyif      => "test -f /var/ivan/queue/package.json",
-    unless      => "test -d /var/ivan/queue/node_modules",
+    #unless      => "test -d /var/ivan/queue/node_modules",
 }
 
 class { 'java': }
